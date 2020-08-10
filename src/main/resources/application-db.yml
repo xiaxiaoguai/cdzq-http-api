@@ -1,0 +1,69 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql://192.168.61.100:3306/api?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: 327638
+      initial-size: 5      #初始化连接个数，默认0
+      min-idle: 5          #最小连接个数
+      max-active: 20       #最大连接个数， 默认8
+      max-wait: 10000       #在没有连接可用的情况下，最大等待时间，默认30000
+      pool-prepared-statements: false                        #开启缓存PSCache,支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭
+      max-pool-prepared-statement-per-connection-size: 100   #指定每个连接上PSCache的大小
+      time-between-eviction-runs-millis: 60000               #在空闲连接回收器线程运行期间休眠的时间值，默认60000=1分钟
+      min-evictable-idle-time-millis: 120000                # 配置一个连接在池中最小生存的时间
+      validation-query: SELECT 1                            #用来检测连接是否有效的sql，Mysql好像用ping
+      validation-query-timeout: 3                           #检查sql超时时间 秒
+      test-while-idle: true     #申请连接的时候检测，超过time-between-eviction-runs-millis才检测
+      test-on-borrow: false     #申请连接时执行validationQuery检测连接是否有效
+      test-on-return: false     #归还连接时执行validationQuery检测连接是否有效
+      remove-abandoned: false   #申请的连接忘记关闭存在连接泄漏的检测。minEvictableIdleTimeMillis=120000=20分钟。也可以回收，不用开启消耗性能。
+      remove-abandoned-timeout: 180 #上面的检测死链接时间
+      log-abandoned: true      #上面的检测死链接，是否打印关闭日志
+      filter:
+        #开启StatFilter
+        stat:
+          enabled: true
+          merge-sql: true #合并统计
+          log-slow-sql: true #统计慢查询
+          slow-sql-millis: 3000 #3秒默认值
+        #开启Slf4jFilter
+        slf4j:
+          enabled: true
+          result-set-log-enabled: true
+          data-source-log-enabled: true
+          connection-log-enabled: true
+          statement-log-enabled: true
+          statement-executable-sql-log-enable: true
+        #开启WallFilter
+        wall:
+          enabled: true
+          db-type: mysql
+          log-violation: true   #对被认为是攻击的SQL进行LOG.error输出
+          throw-exception: true #对被认为是攻击的SQL抛出SQLException
+          config:
+            delete-where-none-check: true #允许delete无where条件
+            update-where-none-check: true #允许update无where条件
+            mustParameterized: false #是否必须参数化，true不允许出现无参数化如id=1的sql
+            select-all-column-allow: true #允许select *
+      #开启Web监控
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        session-stat-max-count: 1000
+        session-stat-enable: true
+        profile-enable: true
+      #开启监控页面
+      stat-view-servlet:
+        enabled: true
+        url-pattern: "/druid/*"
+        allow: 127.0.0.1
+        #deny:
+        reset-enable: true
+        login-username: admin
+        login-password: 327638
+      #开启spring aop监控
+      aop-patterns: com.cdzq.api.controller.*
