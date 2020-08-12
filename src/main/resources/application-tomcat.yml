@@ -1,0 +1,9 @@
+#nohup $JAVA_HOME/bin/java -server -Xms10240m -Xmx14336m -Xmn9216m -XX:MetaspaceSize=400m -XX:MaxMetaspaceSize=5120m -XX:-OmitStackTraceInFastThrow -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:./song_gc.log -XX:ErrorFile=./song_error.log -jar $APP_HOME/$APP_MAINCLASS >> $LOG_FILE 2>&1 &
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+    accept-count: 1000         #等待队列长度，默认100
+    max-threads: 800           #线程数，默认200：4核*200
+    min-spare-threads: 100     #最小线程数默认10
+    max-connections: 10000     #最大连接数，默认为10000
