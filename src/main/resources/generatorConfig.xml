@@ -27,7 +27,7 @@
         <javaClientGenerator targetPackage="com.cdzq.api.mapper"  targetProject="src/main/java" type="ANNOTATEDMAPPER"/>
 
 
-        <table tableName="whiteip">
+        <table tableName="jbr_log">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
         

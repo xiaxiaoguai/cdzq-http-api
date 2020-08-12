@@ -2,14 +2,12 @@ package com.cdzq.api.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.ToString;
 
 import java.util.Date;
 import javax.persistence.*;
 
 @ApiModel(value = "com.cdzq.api.entity.JbrLog",description = "经办人查询日志")
 @Table(name = "jbr_log")
-@ToString
 public class JbrLog {
     @Id
     @Column(name = "id")
@@ -38,6 +36,18 @@ public class JbrLog {
     @ApiModelProperty(value = "客户端手机号")
     @Column(name = "client_tel")
     private String clientTel;
+
+    @ApiModelProperty(value = "产品帐户")
+    @Column(name = "secum_account")
+    private String secumAccount;
+
+    @ApiModelProperty(value = "TA编号")
+    @Column(name = "prodta_no")
+    private String prodtaNo;
+
+    @ApiModelProperty(value = "产品编号")
+    @Column(name = "prod_code")
+    private String prodCode;
 
     /**
      * @return id
@@ -135,5 +145,47 @@ public class JbrLog {
      */
     public void setClientTel(String clientTel) {
         this.clientTel = clientTel;
+    }
+
+    /**
+     * @return secum_account
+     */
+    public String getSecumAccount() {
+        return secumAccount;
+    }
+
+    /**
+     * @param secumAccount
+     */
+    public void setSecumAccount(String secumAccount) {
+        this.secumAccount = secumAccount;
+    }
+
+    /**
+     * @return prodta_no
+     */
+    public String getProdtaNo() {
+        return prodtaNo;
+    }
+
+    /**
+     * @param prodtaNo
+     */
+    public void setProdtaNo(String prodtaNo) {
+        this.prodtaNo = prodtaNo;
+    }
+
+    /**
+     * @return prod_code
+     */
+    public String getProdCode() {
+        return prodCode;
+    }
+
+    /**
+     * @param prodCode
+     */
+    public void setProdCode(String prodCode) {
+        this.prodCode = prodCode;
     }
 }
