@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +31,7 @@ public class OperatorController {
             @ApiImplicitParam(dataType = "JbrLog",name = "jbrLog")
     })
     @GetMapping("findbybrach")
-    public ResultData FindByBrach(HttpServletRequest request, JbrLog jbrLog){
+    public ResultData FindByBrach(HttpServletRequest request,@Validated JbrLog jbrLog){
         String ip = StringUtils.getIp(request);
         if(operatorService.getWhiteIp(ip) == 0){
             return ResultData.error().message("ip:"+ip+"禁止访问");

@@ -4,6 +4,9 @@ import com.cdzq.api.base.ResultData;
 import com.cdzq.api.util.ResponseUtil;
 import com.cdzq.api.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,6 +24,21 @@ import javax.servlet.http.HttpServletResponse;
 @RestControllerAdvice
 public class AllException {
 
+	//参数校验失败
+	@ExceptionHandler(BindException.class)
+	public void badRequestException(BindException e, HttpServletResponse response) {
+		ResultData resultData = ResultData.error();
+		resultData.setHttpcode(200);
+		resultData.setResultcode(-1);
+		BindingResult bindingResult = e.getBindingResult();
+		String errorMesssage = "";
+		for (FieldError fieldError : bindingResult.getFieldErrors()) {
+			errorMesssage += errorMesssage.equals("")?fieldError.getDefaultMessage():","+fieldError.getDefaultMessage();
+		}
+		resultData.setMessage(errorMesssage);
+		resultData.setSuccess(false);
+		ResponseUtil.out(response, resultData);
+	}
 
 	//处理自定义异常
 	@ExceptionHandler(BadRequestException.class)
