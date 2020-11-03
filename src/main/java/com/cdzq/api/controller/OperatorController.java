@@ -37,7 +37,7 @@ public class OperatorController {
             return ResultData.error().message("ip:"+ip+"禁止访问");
         }
         List<Jbr> jbrs = operatorService.getJbrByBrach(jbrLog.getBrachNo());
-        operatorService.insertLog(jbrLog);
+        operatorService.insertLog(jbrLog,ip);
         return ResultData.ok().data("jbrlist",jbrs);
     }
 

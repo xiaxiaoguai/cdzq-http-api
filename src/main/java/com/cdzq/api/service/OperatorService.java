@@ -49,7 +49,8 @@ public class OperatorService {
      * @param jbrLog
      */
     @Async
-    public void insertLog(JbrLog jbrLog){
+    public void insertLog(JbrLog jbrLog,String ip){
+        jbrLog.setSysip(ip);
         jbrLog.setSystime(new Date());
         jbrLogMapper.insert(jbrLog);
 
