@@ -10,7 +10,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     <property name="LOG_HOME" value="D:/devlogs" />
     </springProfile>
     <springProfile name="!dev">
-    <property name="LOG_HOME" value="D:/logs" />
+    <property name="LOG_HOME" value="./logs" />
     </springProfile>
     <!-- 定义日志文件名称 -->
     <property name="appName" value="applog"></property>

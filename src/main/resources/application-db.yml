@@ -8,7 +8,7 @@ spring:
       password: 327638
       initial-size: 5      #初始化连接个数，默认0
       min-idle: 5          #最小连接个数
-      max-active: 20       #最大连接个数， 默认8
+      max-active: 100       #最大连接个数， 默认8
       max-wait: 10000       #在没有连接可用的情况下，最大等待时间，默认30000
       pool-prepared-statements: false                        #开启缓存PSCache,支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭
       max-pool-prepared-statement-per-connection-size: 100   #指定每个连接上PSCache的大小
@@ -60,10 +60,10 @@ spring:
       stat-view-servlet:
         enabled: true
         url-pattern: "/druid/*"
-        allow: 127.0.0.1
+        allow:
         #deny:
         reset-enable: true
         login-username: admin
-        login-password: 327638
+        login-password: 111111
       #开启spring aop监控
       aop-patterns: com.cdzq.api.controller.*
