@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+
 import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ public class JbrLog {
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "JDBC")
+    @ApiModelProperty(value = "ID")
     private Integer id;
 
     @Column(name = "systime")
@@ -27,7 +29,7 @@ public class JbrLog {
 
     @NotNull(message = "营业部编号为空")
     @ApiModelProperty(value = "营业部ID")
-    @Column(name = "brach_no")
+    @Column(name = "brach_no" )
     private Integer brachNo;
 
     @NotNull(message = "资金账号为空")
@@ -45,7 +47,7 @@ public class JbrLog {
     @Column(name = "client_mac")
     private String clientMac;
 
-    @NotNull(message = "客户端手机号")
+    @NotNull(message = "客户端手机号为空")
     @ApiModelProperty(value = "客户端手机号")
     @Column(name = "client_tel")
     private String clientTel;

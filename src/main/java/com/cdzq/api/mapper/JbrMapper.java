@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface JbrMapper extends MyMapper<Jbr> {
 
-    @Select("select id,jbr_id as jbrId,brach_no as brachNo,jbr_name as jbrName,jbr_zs as jbrZs from jbr where brach_no=#{brach_no}")
+    @Select("select id,jbr_id as jbrId,brach_no as brachNo,jbr_name as jbrName,jbr_zs as jbrZs,sortno from jbr where brach_no=#{brach_no} order by sortno")
     List<Jbr> getJbrByBrach(Integer brach_no);
 }
