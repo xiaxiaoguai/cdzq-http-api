@@ -39,16 +39,20 @@ public class OperatorService {
     }
 
     /**
-     * 查询IP是否在白名单
-     * @param ip
+     * 查询IP白名单列表
+     * @param ywlx
      * @return
      */
-    @Cacheable(value="jbr_whiteip",key="#ip")
-    public int getWhiteIp(String ip){
-        Whiteip whiteip = new Whiteip();
-        whiteip.setIp(ip);
-        whiteip.setYwlx("jbr");
-        return whiteipMapper.selectCount(whiteip);
+    @Cacheable(value="jbr_whiteip",key="#ywlx")
+    public String getWhiteIp(String ywlx){
+        String result=null;
+        Whiteip wi = new Whiteip();
+        wi.setYwlx(ywlx);
+        List<Whiteip> whiteip_list=whiteipMapper.select(wi);
+        for (Whiteip whiteip : whiteip_list) {
+            result=result==null?whiteip.getIp():result+";"+whiteip.getIp();
+        }
+        return result;
     }
 
     /**
@@ -167,7 +171,7 @@ public class OperatorService {
      * @param whiteip
      * @return
      */
-    @CacheEvict(value="jbr_whiteip",key="#whiteip.ip")
+    @CacheEvict(value="jbr_whiteip",allEntries=true)
     public ResultData addWhiteip(Whiteip whiteip) {
         whiteip.setYwlx("jbr");
         whiteipMapper.insert(whiteip);
@@ -179,7 +183,7 @@ public class OperatorService {
      * @param whiteip
      * @return
      */
-    @CacheEvict(value="jbr_whiteip",key="#whiteip.ip")
+    @CacheEvict(value="jbr_whiteip",allEntries=true)
     public ResultData deleteWhiteip(Whiteip whiteip) {
         whiteipMapper.deleteByPrimaryKey(whiteip.getId());
         return ResultData.ok();

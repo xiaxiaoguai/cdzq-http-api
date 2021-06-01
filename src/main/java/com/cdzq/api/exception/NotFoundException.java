@@ -1,7 +1,7 @@
 package com.cdzq.api.exception;
 
 import com.cdzq.api.base.ResultData;
-import com.cdzq.api.util.StringUtils;
+import com.cdzq.api.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +27,7 @@ public class NotFoundException implements ErrorController {
     public ResultData error(HttpServletRequest request) {
     	StringBuffer sb = new StringBuffer();
     	sb.append("Message=Not Found 404");
-    	sb.append("&Ip="+ StringUtils.getIp(request));
+    	sb.append("&Ip="+ IpUtils.getIp(request));
 		sb.append("&Url="+request.getAttribute("RealUrl"));
 		sb.append("&HttpType="+request.getMethod());
 		String parameters = "";

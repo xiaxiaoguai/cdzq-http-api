@@ -6,7 +6,7 @@ import com.cdzq.api.entity.JbrLog;
 import com.cdzq.api.entity.Whiteip;
 import com.cdzq.api.service.OperatorService;
 import com.cdzq.api.util.JqueryUiJson;
-import com.cdzq.api.util.StringUtils;
+import com.cdzq.api.util.IpUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,8 +34,9 @@ public class OperatorController {
     })
     @GetMapping("findbybrach")
     public ResultData FindByBrach(HttpServletRequest request,@Validated JbrLog jbrLog){
-        String ip = StringUtils.getIp(request);
-        if(operatorService.getWhiteIp(ip) == 0){
+        String ip = IpUtils.getIp(request);
+        String white_ip_list=operatorService.getWhiteIp("jbr");
+        if(IpUtils.checkLoginIP(ip,white_ip_list)==false){
             return ResultData.error().message("ip:"+ip+"禁止访问");
         }
         List<Jbr> jbrs = operatorService.getJbrByBrach(jbrLog.getBrachNo());

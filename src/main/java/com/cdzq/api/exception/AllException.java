@@ -2,7 +2,7 @@ package com.cdzq.api.exception;
 
 import com.cdzq.api.base.ResultData;
 import com.cdzq.api.util.ResponseUtil;
-import com.cdzq.api.util.StringUtils;
+import com.cdzq.api.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -62,7 +62,7 @@ public class AllException {
 		sb.append("&File="+stackTraceElement.getFileName());
 		sb.append("&Method="+stackTraceElement.getMethodName());
 		sb.append("&Line="+stackTraceElement.getLineNumber());
-		sb.append("&Ip="+ StringUtils.getIp(request));
+		sb.append("&Ip="+ IpUtils.getIp(request));
 		sb.append("&Url="+request.getRequestURL());
 		sb.append("&HttpType="+request.getMethod());
 		String parameters = "";
