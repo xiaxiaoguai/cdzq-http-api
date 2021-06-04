@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import io.lettuce.core.ReadFrom;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -12,18 +13,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static io.lettuce.core.ReadFrom.REPLICA_PREFERRED;
 
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
@@ -33,6 +35,12 @@ public class RedisConfig extends CachingConfigurerSupport {
 	private String hostname;
 	@Value("${spring.redis.database}")
 	private int database;
+	@Value("${spring.redis.sentinel.master:#{null}}")
+	private String master;
+	@Value("${spring.redis.sentinel.nodes:#{null}}")
+	private String nodes;
+	@Value("${spring.redis.replica-read}")
+	private boolean replicaRead;
 	@Value("${spring.redis.lettuce.pool.max-idle}")
 	private int maxIdle;
 	@Value("${spring.redis.lettuce.pool.min-idle}")
@@ -55,23 +63,32 @@ public class RedisConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setMaxWaitMillis(maxWait);
 		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
 
+		ReadFrom readFrom = replicaRead?ReadFrom.REPLICA_PREFERRED:ReadFrom.MASTER_PREFERRED;
+
 		LettucePoolingClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
-				.readFrom(REPLICA_PREFERRED)
+				.readFrom(readFrom)
 				.poolConfig(genericObjectPoolConfig)
 				.shutdownTimeout(Duration.ofMillis(shutDownTimeout))
 				.build();
 
-//		RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration()
-//				.master("mymaster")
-//				// 哨兵地址
-//				.sentinel("192.168.80.130", 26379)
-//				.sentinel("192.168.80.130", 26380)
-//				.sentinel("192.168.80.130", 26381);
-		RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration();
-		serverConfig.setHostName(hostname);
-		serverConfig.setPort(port);
-		serverConfig.setDatabase(database);
-		return new LettuceConnectionFactory(serverConfig,clientConfig);
+		RedisConfiguration redisConfiguration = null;
+		if(master!=null){
+			redisConfiguration = new RedisSentinelConfiguration().master(master);
+
+			Set<RedisNode> redisNodeSet = new HashSet<>();
+			List<String> _nodes= Arrays.asList(nodes.split(","));
+			_nodes.forEach(x->{
+				redisNodeSet.add(new RedisNode(x.split(":")[0],Integer.parseInt(x.split(":")[1])));
+			});
+			((RedisSentinelConfiguration) redisConfiguration).setSentinels(redisNodeSet);
+		}else{
+			redisConfiguration = new RedisStandaloneConfiguration();
+			((RedisStandaloneConfiguration) redisConfiguration).setHostName(hostname);
+			((RedisStandaloneConfiguration) redisConfiguration).setPort(port);
+			((RedisStandaloneConfiguration) redisConfiguration).setDatabase(database);
+		}
+
+		return new LettuceConnectionFactory(redisConfiguration,clientConfig);
 	}
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
