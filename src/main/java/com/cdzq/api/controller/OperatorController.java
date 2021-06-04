@@ -37,6 +37,8 @@ public class OperatorController {
         String ip = IpUtils.getIp(request);
         String white_ip_list=operatorService.getWhiteIp("jbr");
         if(IpUtils.checkLoginIP(ip,white_ip_list)==false){
+            jbrLog.setProdCode("ip:"+ip+"禁止访问");
+            operatorService.insertLog(jbrLog,ip);
             return ResultData.error().message("ip:"+ip+"禁止访问");
         }
         List<Jbr> jbrs = operatorService.getJbrByBrach(jbrLog.getBrachNo());
