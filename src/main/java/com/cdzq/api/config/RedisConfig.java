@@ -5,20 +5,74 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
+
+import static io.lettuce.core.ReadFrom.REPLICA_PREFERRED;
+
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
+	@Value("${spring.redis.port}")
+	private int port;
+	@Value("${spring.redis.host}")
+	private String hostname;
+	@Value("${spring.redis.database}")
+	private int database;
+	@Value("${spring.redis.lettuce.pool.max-idle}")
+	private int maxIdle;
+	@Value("${spring.redis.lettuce.pool.min-idle}")
+	private int minIdle;
+	@Value("${spring.redis.lettuce.pool.max-active}")
+	private int maxActive;
+	@Value("${spring.redis.lettuce.pool.max-wait}")
+	private long maxWait;
+	@Value("${spring.redis.lettuce.pool.shutdown-timeout}")
+	private long shutDownTimeout;
+	@Value("${spring.redis.lettuce.pool.time-between-eviction-runs-millis}")
+	private long timeBetweenEvictionRunsMillis;
 
+	@Bean
+	public LettuceConnectionFactory redisConnectionFactory() {
+		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
+		genericObjectPoolConfig.setMaxIdle(maxIdle);
+		genericObjectPoolConfig.setMinIdle(minIdle);
+		genericObjectPoolConfig.setMaxTotal(maxActive);
+		genericObjectPoolConfig.setMaxWaitMillis(maxWait);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+
+		LettucePoolingClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
+				.readFrom(REPLICA_PREFERRED)
+				.poolConfig(genericObjectPoolConfig)
+				.shutdownTimeout(Duration.ofMillis(shutDownTimeout))
+				.build();
+
+//		RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration()
+//				.master("mymaster")
+//				// 哨兵地址
+//				.sentinel("192.168.80.130", 26379)
+//				.sentinel("192.168.80.130", 26380)
+//				.sentinel("192.168.80.130", 26381);
+		RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration();
+		serverConfig.setHostName(hostname);
+		serverConfig.setPort(port);
+		serverConfig.setDatabase(database);
+		return new LettuceConnectionFactory(serverConfig,clientConfig);
+	}
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		// redis缓存配置
@@ -45,7 +99,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 
 	@Bean
 	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory factory) {
-
 		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		// 配置连接工厂
 		template.setConnectionFactory(factory);

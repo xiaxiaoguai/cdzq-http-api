@@ -5,7 +5,15 @@ spring:
     database: 0
     lettuce:
       pool:
-        max-wait: 10000  # 连接池最大阻塞等待时间ms（使用负值表示没有限制）
-        min-idle: 10 # 连接池中的最小空闲连接，默认0
+        max-wait: 10000  # 连接池最大阻塞等待时间ms（使用负值表示没有限制），默认-1
+        min-idle: 5 # 连接池中的最小空闲连接，默认0
         max-idle: 20 # 连接池中的最大空闲连接,默认8
-        max-active: 1024 # 连接池最大连接数,默认8
+        max-active: 100 # 连接池最大连接数,默认8
+        shutdown-timeout: 1000 #关闭客户端后，保持多久处理正在处理的任务，默认100ms
+        time-between-eviction-runs-millis: -1 # 每隔多少毫秒，关闭空闲连接，保持最少连接可用，建议最小60000 。默认是 -1 表示min-idle不生效，共用一个物理连接
+
+
+  # name of Redis server  哨兵监听的Redis server的名称
+  #  spring.redis.sentinel.master=mymaster
+  # comma-separated list of host:port pairs  哨兵的配置列表
+  # spring.redis.sentinel.nodes=127.0.0.1:26379,127.0.0.1:26479,127.0.0.1:26579
