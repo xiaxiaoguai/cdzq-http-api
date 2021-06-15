@@ -22,7 +22,7 @@ public class Jbr {
 
     @ApiModelProperty(value = "经办人编码")
     @Column(name = "jbr_id")
-    private String jbrId;
+    private Integer jbrId;
 
     @NotNull(message = "营业部编号为空")
     @ApiModelProperty(value = "营业部编号")
